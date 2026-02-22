@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { toNextJsHandler } from "better-auth/next-js";
 import { db } from "@repo/db/client";
 
 export const auth = betterAuth({
@@ -29,5 +30,7 @@ export const auth = betterAuth({
 {% if include_mobile %}    process.env.EXPO_PUBLIC_API_URL || "http://localhost:8081",
 {% endif %}  ],
 });
+
+export const authHandler = toNextJsHandler(auth);
 
 export type Auth = typeof auth;
