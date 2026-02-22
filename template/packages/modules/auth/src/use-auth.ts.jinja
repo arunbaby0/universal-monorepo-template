@@ -1,0 +1,142 @@
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { AuthUser, LoginCredentials, SignupCredentials } from "@repo/types";
+import { getApiUrl } from "@repo/types";
+
+interface AuthState {
+  user: AuthUser | null;
+  loading: boolean;
+  error: string | null;
+  initialized: boolean;
+
+  // Actions
+  login: (credentials: LoginCredentials) => Promise<void>;
+  signup: (credentials: SignupCredentials) => Promise<void>;
+  logout: () => Promise<void>;
+{% if auth_providers in ["email_google", "email_google_apple"] %}  loginWithGoogle: () => Promise<void>;
+{% endif %}{% if auth_providers == "email_google_apple" %}  loginWithApple: () => Promise<void>;
+{% endif %}  checkSession: () => Promise<void>;
+  clearError: () => void;
+}
+
+export const useAuth = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      loading: false,
+      error: null,
+      initialized: false,
+
+      login: async (credentials) => {
+        set({ loading: true, error: null });
+        try {
+          const res = await fetch(`${getApiUrl()}/api/auth/sign-in/email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(credentials),
+          });
+
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || "Login failed");
+          }
+
+          const data = await res.json();
+          set({ user: data.user, loading: false });
+        } catch (err) {
+          set({
+            error: err instanceof Error ? err.message : "Login failed",
+            loading: false,
+          });
+          throw err;
+        }
+      },
+
+      signup: async (credentials) => {
+        set({ loading: true, error: null });
+        try {
+          const res = await fetch(`${getApiUrl()}/api/auth/sign-up/email`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(credentials),
+          });
+
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message || "Signup failed");
+          }
+
+          const data = await res.json();
+          set({ user: data.user, loading: false });
+        } catch (err) {
+          set({
+            error: err instanceof Error ? err.message : "Signup failed",
+            loading: false,
+          });
+          throw err;
+        }
+      },
+
+      logout: async () => {
+        set({ loading: true, error: null });
+        try {
+          await fetch(`${getApiUrl()}/api/auth/sign-out`, {
+            method: "POST",
+            credentials: "include",
+          });
+          set({ user: null, loading: false });
+        } catch (err) {
+          set({
+            error: err instanceof Error ? err.message : "Logout failed",
+            loading: false,
+          });
+        }
+      },
+{% if auth_providers in ["email_google", "email_google_apple"] %}
+      loginWithGoogle: async () => {
+        window.location.href = `${getApiUrl()}/api/auth/sign-in/social?provider=google`;
+      },
+{% endif %}{% if auth_providers == "email_google_apple" %}
+      loginWithApple: async () => {
+        window.location.href = `${getApiUrl()}/api/auth/sign-in/social?provider=apple`;
+      },
+{% endif %}
+      checkSession: async () => {
+        set({ loading: true });
+        try {
+          const res = await fetch(`${getApiUrl()}/api/auth/session`, {
+            credentials: "include",
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            set({ user: data.user, loading: false, initialized: true });
+          } else {
+            set({ user: null, loading: false, initialized: true });
+          }
+        } catch {
+          set({ user: null, loading: false, initialized: true });
+        }
+      },
+
+      clearError: () => set({ error: null }),
+    }),
+    {
+      name: "auth-storage",
+      storage: createJSONStorage(() => {
+        if (typeof window !== "undefined") {
+          return localStorage;
+        }
+        // Return a no-op storage for SSR
+        return {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        };
+      }),
+      partialize: (state) => ({ user: state.user }),
+    }
+  )
+);

@@ -1,0 +1,74 @@
+"use client";
+
+import Link from "next/link";
+import { useAuth } from "@repo/auth";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui";
+
+export default function DashboardPage() {
+  const { user } = useAuth();
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <p className="text-muted-foreground">Welcome back, {user?.name}!</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Link href="/dashboard/profile">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle>Profile</CardTitle>
+              <CardDescription>Manage your profile information</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Update your bio, location, and other details.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+{% if include_payments %}
+        <Link href="/dashboard/billing">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle>Billing</CardTitle>
+              <CardDescription>Manage your subscription</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                View and update your payment methods.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+{% endif %}{% if include_sample_entity %}
+        <Link href="/dashboard/notes">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle>Notes</CardTitle>
+              <CardDescription>Your personal notes</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Create, edit, and manage your notes.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+{% endif %}
+        <Card>
+          <CardHeader>
+            <CardTitle>Settings</CardTitle>
+            <CardDescription>Configure your account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Adjust notifications and preferences.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

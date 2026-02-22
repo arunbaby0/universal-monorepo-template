@@ -1,0 +1,17 @@
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  transpilePackages: [
+    "@repo/api",
+    "@repo/auth",
+    "@repo/db",
+    "@repo/notifications",
+{% if include_payments %}    "@repo/payments",
+{% endif %}    "@repo/profile",
+{% if include_sample_entity %}    "@repo/notes",
+{% endif %}    "@repo/types",
+    "@repo/ui",
+  ],
+};
+
+export default nextConfig;

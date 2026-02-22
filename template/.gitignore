@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+.turbo/
+.expo/
+out/
+
+# Tauri
+apps/desktop/src-tauri/target/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+
+# Lock files (keep bun.lockb)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Misc
+*.tsbuildinfo
+*.local
+.cache/
+
+# Storybook
+storybook-static/
+
+# Drizzle
+drizzle/meta/
+
+# Mobile
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# Copier
+.copier-answers.yml

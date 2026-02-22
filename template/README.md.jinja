@@ -1,0 +1,72 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+## Getting Started
+
+```bash
+# Start PostgreSQL
+docker compose up -d
+
+# Install dependencies
+bun install
+
+# Push database schema
+bun run db:push
+
+# Start development server
+bun run dev:web
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `bun run dev` | Start all apps in parallel |
+| `bun run dev:web` | Start web app only |
+{%- if include_mobile %}
+| `bun run dev:mobile` | Start Expo dev server |
+{%- endif %}
+{%- if include_desktop %}
+| `bun run dev:desktop` | Start Tauri desktop app |
+{%- endif %}
+{%- if include_storybook %}
+| `bun run dev:storybook` | Start Storybook |
+{%- endif %}
+| `bun run build` | Production build |
+| `bun run type-check` | TypeScript type checking |
+| `bun run lint` | Run linter |
+| `bun run test` | Run tests |
+| `bun run db:push` | Push schema to database |
+| `bun run db:studio` | Open Drizzle Studio |
+| `bun run db:generate` | Generate migration |
+| `bun run db:migrate` | Run migrations |
+
+## Architecture
+
+```
+{{ project_name }}/
+├── apps/
+│   ├── web/           # Next.js web application
+{%- if include_mobile %}
+│   ├── mobile/        # Expo mobile app
+{%- endif %}
+{%- if include_desktop %}
+│   └── desktop/       # Tauri desktop app
+{%- endif %}
+├── packages/
+│   ├── api/           # Server-side logic (auth, payments)
+│   ├── db/            # Database schemas and client
+│   ├── types/         # Shared TypeScript types
+│   ├── ui/            # Shared UI utilities
+│   └── modules/       # Feature modules (Zustand stores)
+└── docker-compose.yml
+```
+
+## Environment
+
+Copy `.env.example` to `.env` and fill in the values:
+
+```bash
+cp .env.example .env
+```

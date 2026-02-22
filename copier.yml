@@ -1,0 +1,51 @@
+_min_copier_version: "9.1.0"
+_subdirectory: template
+_templates_suffix: .jinja
+_skip_if_exists:
+  - ".env"
+
+# --- Questions ---
+
+project_name:
+  type: str
+  help: "Project name (kebab-case, e.g. my-app)"
+  validator: "{% if not project_name | regex_search('^[a-z][a-z0-9-]*$') %}Must be kebab-case (lowercase letters, numbers, hyphens){% endif %}"
+
+project_description:
+  type: str
+  default: "A universal app"
+  help: "One-line project description"
+
+include_mobile:
+  type: bool
+  default: true
+  help: "Include Expo mobile app?"
+
+include_desktop:
+  type: bool
+  default: false
+  help: "Include Tauri desktop app?"
+
+include_payments:
+  type: bool
+  default: true
+  help: "Include Stripe payment integration?"
+
+include_storybook:
+  type: bool
+  default: true
+  help: "Include Storybook for component development?"
+
+include_sample_entity:
+  type: bool
+  default: true
+  help: "Include sample 'notes' CRUD entity?"
+
+auth_providers:
+  type: str
+  default: "email_google_apple"
+  choices:
+    email_only: "Email/password only"
+    email_google: "Email + Google OAuth"
+    email_google_apple: "Email + Google + Apple OAuth"
+  help: "Authentication providers to configure"

@@ -1,0 +1,31 @@
+{
+  "name": "@repo/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./auth": {
+      "types": "./src/auth.ts",
+      "default": "./src/auth.ts"
+    }{% if include_payments %},
+    "./stripe": {
+      "types": "./src/stripe.ts",
+      "default": "./src/stripe.ts"
+    }{% endif %}
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "better-auth": "^1.4.9",
+{% if include_payments %}    "stripe": "^17.5.0",
+{% endif %}    "@repo/db": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

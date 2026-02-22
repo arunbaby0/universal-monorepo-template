@@ -1,0 +1,33 @@
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "@repo/db/client";
+
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "pg",
+  }),
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 8,
+  },
+{% if auth_providers in ["email_google", "email_google_apple"] %}  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+{% if auth_providers == "email_google_apple" %}    apple: {
+      clientId: process.env.APPLE_CLIENT_ID!,
+      clientSecret: process.env.APPLE_PRIVATE_KEY!,
+    },
+{% endif %}  },
+{% endif %}  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // 1 day
+  },
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL || "http://localhost:3000",
+{% if include_mobile %}    process.env.EXPO_PUBLIC_API_URL || "http://localhost:8081",
+{% endif %}  ],
+});
+
+export type Auth = typeof auth;
