@@ -45,7 +45,7 @@ auth_providers:
   type: str
   default: "email_google_apple"
   choices:
-    email_only: "Email/password only"
-    email_google: "Email + Google OAuth"
-    email_google_apple: "Email + Google + Apple OAuth"
+    - email_only
+    - email_google
+    - email_google_apple
   help: "Authentication providers to configure"
