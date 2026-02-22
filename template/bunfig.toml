@@ -1,0 +1,5 @@
+[install]
+# Metro bundler (used by Expo/React Native) requires a flat node_modules
+# structure to resolve transitive Babel plugins. Bun's default "isolated"
+# linker uses .bun/ symlinks that Metro workers cannot traverse.
+linker = "hoisted"

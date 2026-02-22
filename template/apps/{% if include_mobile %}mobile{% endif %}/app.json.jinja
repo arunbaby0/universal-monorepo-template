@@ -24,11 +24,7 @@
       },
       "package": "com.{{ project_name | replace('-', '') }}.mobile"
     },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/favicon.png"
-    },
+    "platforms": ["ios", "android"],
     "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
