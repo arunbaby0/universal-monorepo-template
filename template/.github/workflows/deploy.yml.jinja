@@ -1,0 +1,81 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: {{ "${{ github.workflow }}-${{ github.ref }}" }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-web:
+    name: Deploy Web
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: {{ "${{ secrets.VERCEL_TOKEN }}" }}
+          vercel-org-id: {{ "${{ secrets.VERCEL_ORG_ID }}" }}
+          vercel-project-id: {{ "${{ secrets.VERCEL_PROJECT_ID }}" }}
+          vercel-args: --prod
+{% if include_mobile %}
+  deploy-mobile:
+    name: Deploy Mobile (EAS)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: {{ "${{ secrets.EXPO_TOKEN }}" }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build and Submit
+        working-directory: apps/mobile
+        run: eas build --platform all --non-interactive
+{%- endif %}
+{% if include_desktop %}
+  deploy-desktop:
+    name: Deploy Desktop (Tauri)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Tauri system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Build Desktop
+        working-directory: apps/desktop
+        run: bun run build
+{%- endif %}
